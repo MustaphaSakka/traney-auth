@@ -20,6 +20,7 @@ func Start() {
 	ah := AuthHandler{service.NewLoginService(authRepository, domain.GetRolePermissions())}
 
 	router.HandleFunc("/auth/login", ah.Login).Methods(http.MethodPost)
+	router.HandleFunc("/auth/verify", ah.Verify).Methods(http.MethodGet)
 
 	// starting server
 	log.Fatal(http.ListenAndServe("localhost:8888", router))
