@@ -2,11 +2,11 @@ package domain
 
 import (
 	"database/sql"
-	"errors"
-	"log"
 	"strings"
 	"time"
 
+	"github.com/MustaphaSakka/traney-lib/exception"
+	"github.com/MustaphaSakka/traney-lib/logger"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -19,7 +19,7 @@ type Login struct {
 	Role     string         `db:"role"`
 }
 
-func (l Login) GenerateToken() (*string, error) {
+func (l Login) GenerateToken() (*string, *exception.AppException) {
 	var claims jwt.MapClaims
 	if l.Accounts.Valid && l.ClientId.Valid {
 		claims = l.claimsForUser()
@@ -30,8 +30,8 @@ func (l Login) GenerateToken() (*string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signedTokenAsString, err := token.SignedString([]byte(HMAC_SAMPLE_SECRET))
 	if err != nil {
-		log.Println("Failed while signing token: " + err.Error())
-		return nil, errors.New("cannot generate token")
+		logger.Error("Failed while signing token: " + err.Error())
+		return nil, exception.InternalServerException("cannot generate token")
 	}
 	return &signedTokenAsString, nil
 }

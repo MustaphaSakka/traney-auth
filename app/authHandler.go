@@ -2,8 +2,9 @@ package app
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
+
+	"github.com/MustaphaSakka/traney-lib/logger"
 
 	"github.com/MustaphaSakka/traney-auth/dto"
 	"github.com/MustaphaSakka/traney-auth/service"
@@ -20,12 +21,12 @@ func (h AuthHandler) NotImplementedHandler(w http.ResponseWriter, r *http.Reques
 func (h AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var loginRequest dto.LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&loginRequest); err != nil {
-		log.Println("Error while decoding login request: " + err.Error())
+		logger.Error("Error while decoding login request: " + err.Error())
 		w.WriteHeader(http.StatusBadRequest)
 	} else {
-		token, err := h.service.Login(loginRequest)
-		if err != nil {
-			writeResponse(w, http.StatusUnauthorized, err.Error())
+		token, exception := h.service.Login(loginRequest)
+		if exception != nil {
+			writeResponse(w, exception.Code, exception.AsMessage())
 		} else {
 			writeResponse(w, http.StatusOK, *token)
 		}

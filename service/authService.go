@@ -2,7 +2,9 @@ package service
 
 import (
 	"errors"
-	"log"
+
+	"github.com/MustaphaSakka/traney-lib/exception"
+	"github.com/MustaphaSakka/traney-lib/logger"
 
 	"github.com/MustaphaSakka/traney-auth/domain"
 	"github.com/MustaphaSakka/traney-auth/dto"
@@ -10,7 +12,7 @@ import (
 )
 
 type AuthService interface {
-	Login(dto.LoginRequest) (*string, error)
+	Login(dto.LoginRequest) (*string, *exception.AppException)
 	Verify(urlParams map[string]string) (bool, error)
 }
 
@@ -19,7 +21,7 @@ type DefaultAuthService struct {
 	rolePermissions domain.RolePermissions
 }
 
-func (s DefaultAuthService) Login(req dto.LoginRequest) (*string, error) {
+func (s DefaultAuthService) Login(req dto.LoginRequest) (*string, *exception.AppException) {
 	login, err := s.repo.FindBy(req.Username, req.Password)
 	if err != nil {
 		return nil, err
@@ -70,7 +72,7 @@ func jwtTokenFromString(tokenString string) (*jwt.Token, error) {
 		return []byte(domain.HMAC_SAMPLE_SECRET), nil
 	})
 	if err != nil {
-		log.Println("Error while parsing token: " + err.Error())
+		logger.Error("Error while parsing token: " + err.Error())
 		return nil, err
 	}
 	return token, nil
