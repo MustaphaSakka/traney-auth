@@ -1,8 +1,6 @@
 package domain
 
 import (
-	"encoding/json"
-
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -14,24 +12,25 @@ type Claims struct {
 	Username string   `json:"username"`
 	Expiry   int64    `json:"exp"`
 	Role     string   `json:"role"`
+	jwt.RegisteredClaims
 }
 
 func (c Claims) IsUserRole() bool {
 	return c.Role == "user"
 }
 
-func BuildClaimsFromJwtMapClaims(mapClaims jwt.MapClaims) (*Claims, error) {
-	bytes, err := json.Marshal(mapClaims)
-	if err != nil {
-		return nil, err
-	}
-	var c Claims
-	err = json.Unmarshal(bytes, &c)
-	if err != nil {
-		return nil, err
-	}
-	return &c, nil
-}
+// func BuildClaimsFromJwtMapClaims(mapClaims jwt.MapClaims) (*Claims, error) {
+// 	bytes, err := json.Marshal(mapClaims)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	var c Claims
+// 	err = json.Unmarshal(bytes, &c)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return &c, nil
+// }
 
 func (c Claims) IsValidClientId(ClientId string) bool {
 	return c.ClientId == ClientId
