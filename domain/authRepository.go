@@ -21,7 +21,7 @@ func (d AuthRepositoryDb) FindBy(username, password string) (*Login, *exception.
 	sqlVerify := `SELECT username, u.client_id, role, group_concat(a.account_id) as account_numbers FROM users u
                   LEFT JOIN accounts a ON a.client_id = u.client_id
                 WHERE username = ? and password = ?
-                GROUP BY a.client_id`
+                GROUP BY u.username, u.client_id, u.role`
 
 	err := d.client.Get(&l, sqlVerify, username, password)
 	if err != nil {

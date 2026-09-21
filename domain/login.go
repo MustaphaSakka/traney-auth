@@ -14,7 +14,7 @@ const TOKEN_DURATION = time.Hour
 
 type Login struct {
 	Username string         `db:"username"`
-	ClientId sql.NullString `db:"client_id"`
+	ClientId sql.NullInt64  `db:"client_id"`
 	Accounts sql.NullString `db:"account_numbers"`
 	Role     string         `db:"role"`
 }
@@ -39,7 +39,7 @@ func (l Login) GenerateToken() (*string, *exception.AppException) {
 func (l Login) claimsForUser() jwt.MapClaims {
 	accounts := strings.Split(l.Accounts.String, ",")
 	return jwt.MapClaims{
-		"client_id": l.ClientId.String,
+		"client_id": l.ClientId.Int64,
 		"role":      l.Role,
 		"username":  l.Username,
 		"accounts":  accounts,
