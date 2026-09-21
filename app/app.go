@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/MustaphaSakka/traney-auth/domain"
@@ -27,7 +28,18 @@ func Start() {
 }
 
 func getDbClient() *sqlx.DB {
-	client, err := sqlx.Open("mysql", "root:@/traney")
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	database := os.Getenv("DB_NAME")
+
+	dsn := fmt.Sprintf(
+		"%s:%s@tcp(%s:%s)/%s",
+		user, password, host, port, database,
+	)
+
+	client, err := sqlx.Open("mysql", dsn)
 	if err != nil {
 		panic(err)
 	}
